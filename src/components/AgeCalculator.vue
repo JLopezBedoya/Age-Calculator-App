@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-    const day = ref(0)
-    const month = ref(0)
-    const year = ref(0)
+    const day = ref(11)
+    const month = ref(2)
+    const year = ref(2004)
     const time = ref({
         day: "29",
         month: "11",
@@ -10,9 +10,16 @@ import { ref } from 'vue';
     })
     const Datehandle = ()=>{
         const current = new Date()
-        time.value.year = current.getFullYear() - year.value
-        time.value.month = current.getMonth() - (month.value-1)
-        time.value.day = current.getDate() - day.value
+        let monthCondition = current.getMonth() - (month.value-1)
+        let dayCondition = current.getDate() - day.value
+        let getMonth = (monthCondition > 0 ? monthCondition: 12-Math.abs(monthCondition))
+        let getDay = (dayCondition > 0 ? dayCondition: 30-Math.abs(dayCondition))
+        let getYear = (current.getFullYear() - year.value)-(monthCondition > 0 ? 0:(monthCondition == 0) ? dayCondition >= 0 ? 0:1:1)
+        time.value = {
+            year: getYear,
+            month: (getMonth == 12 ? 0:getMonth),
+            day: (getDay == 30 ? 0:getDay)
+        }
     }
 </script>
 
