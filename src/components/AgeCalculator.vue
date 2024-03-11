@@ -1,44 +1,84 @@
 <script setup>
 import { ref } from 'vue';
-    const day = ref(11)
-    const month = ref(2)
-    const year = ref(2004)
+    const day = ref(17)
+    const month = ref(4)
+    const year = ref(2007)
+    const day31 = [0, 2, 4, 6, 7, 9, 11]
+    const day30 = [3, 5, 8, 10]
+    const error = [false,false,false]
     const time = ref({
-        day: "29",
-        month: "11",
-        year: "86"
+        day: "--",
+        month: "--",
+        year: "--"
     })
     const Datehandle = ()=>{
         const current = new Date()
-        let monthCondition = current.getMonth() - (month.value-1)
-        let dayCondition = current.getDate() - day.value
-        let getMonth = (monthCondition > 0 ? monthCondition: 12-Math.abs(monthCondition))
-        let getDay = (dayCondition > 0 ? dayCondition: 30-Math.abs(dayCondition))
-        let getYear = (current.getFullYear() - year.value)-(monthCondition > 0 ? 0:(monthCondition == 0) ? dayCondition >= 0 ? 0:1:1)
-        time.value = {
-            year: getYear,
-            month: (getMonth == 12 ? 0:getMonth),
-            day: (getDay == 30 ? 0:getDay)
+        var condition = true
+        if(day31.includes(month.value-1)){
+            condition = day.value < 32 && day.value > 0
+        }else if(day30.includes(month.value-1)){
+            condition = day.value < 31 && day.value > 0
+        }else if(month.value-1 == 1){
+            condition = day.value < 30 && day.value > 0
+        }else{
+            condition = false
         }
+        if(condition && month.value >= 0 && month.value <=12 && current.getFullYear() >= year.value){
+            let monthCondition = current.getMonth() - (month.value-1)
+            let dayCondition = current.getDate() - day.value
+            console.log(dayCondition);
+            let getDay = (dayCondition > 0 ? dayCondition: 30-Math.abs(dayCondition))
+            let getMonth = (monthCondition > 0 ? monthCondition: 12-Math.abs(monthCondition))
+            let getYear = (current.getFullYear() - year.value)-(monthCondition > 0 ? 0:(monthCondition == 0) ? dayCondition >= 0 ? 0:1:1)
+            time.value = {
+                year: getYear,
+                month: (getMonth == 12 ? 0:getMonth),
+                day: (getDay == 30 ? 0:getDay)
+            }
+        }else{
+            time.value = {
+                day: "--",
+                month: "--",
+                year: "--"
+            }
+        }
+        if (!condition) {
+                error[0] = true
+            }else{
+                error[0] = false
+            }
+            if (month.value < 0 || month.value > 12) {
+                error[1] = true
+            }else{
+                error[1] = false
+            }
+            if (current.getFullYear() < year.value) {
+                error[2] = true
+            }else{
+                error[2] = false
+            }
     }
 </script>
 
 <template>
 <div class="bg-purple-200 h-screen w-screen flex justify-center items-center">
-    <section class="h-[60%] w-[90%] sm:w-[55%] sm:h-[70%] hz card p-5 grid grid-cols-1 grid-rows-6 bg-white font-bold">
+    <section class="h-[60%] w-[90%] sm:w-[55%] sm:h-[70%] hz card p-5 grid grid-cols-1 grid-rows-7 bg-white font-bold">
 
-        <article class="flex md:w-[80%] w-[100%]">
+        <article class="flex md:w-[80%] w-[100%] row-span-2">
             <section>
-                <p class="mb-1">DAY</p>
-                <input v-model="day" class="p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2" type="text" placeholder="DD">
+                <p :class="`mb-1 ${error[0] ? 'text-red-500':''}`">DAY</p>
+                <input v-model="day" :class="`p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2 ${error[0] ? 'text-red-500 border-red-500':''}`" type="text" placeholder="DD">
+                <p v-if="error[0]" class="text-red-500 text-xs">Must be a valid day</p>
             </section>
             <section>
-                <p class="mb-1">MONTH</p>
-                <input v-model="month" class="p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2" type="text" placeholder="MM">
+                <p :class="`mb-1 ${error[1] ? 'text-red-500':''}`">MONTH</p>
+                <input v-model="month" :class="`p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2 ${error[1] ? 'text-red-500 border-red-500':''}`" type="text" placeholder="MM">
+                <p v-if="error[1]" class="text-red-500 text-xs">Must be a valid month</p>
             </section>
             <section>
-                <p class="mb-1">YEAR</p>
-                <input v-model="year" class="p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2" type="text" placeholder="YYYY">
+                <p :class="`mb-1 ${error[2] ? 'text-red-500':''}`">YEAR</p>
+                <input v-model="year" :class="`p-2 text-lg md:text-2xl w-[75%] rounded-md border-purple-200 border-2 ${error[2] ? 'text-red-500 border-red-500':''}`" type="text" placeholder="YYYY">
+                <p v-if="error[2]" class="text-red-500 text-xs">Must be a valid Year</p>
             </section>
         </article>
 
@@ -71,7 +111,7 @@ import { ref } from 'vue';
         font-weight: 700;
         font-style: italic;
     }
-    @media screen and (min-width: 768px) and (max-width: 1023px) and (max-height: 500px){
+    @media screen and (min-width: 760px) and (max-width: 1023px) and (max-height: 500px){
         .hz{
             height: 100%;
         }
