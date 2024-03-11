@@ -26,7 +26,6 @@ import { ref } from 'vue';
         if(condition && month.value >= 0 && month.value <=12 && current.getFullYear() >= year.value){
             let monthCondition = current.getMonth() - (month.value-1)
             let dayCondition = current.getDate() - day.value
-            console.log(dayCondition);
             let getDay = (dayCondition > 0 ? dayCondition: 30-Math.abs(dayCondition))
             let getMonth = (monthCondition > 0 ? monthCondition: 12-Math.abs(monthCondition))
             let getYear = (current.getFullYear() - year.value)-(monthCondition > 0 ? 0:(monthCondition == 0) ? dayCondition >= 0 ? 0:1:1)
